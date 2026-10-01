@@ -1,9 +1,19 @@
-Write-Host "Привет! Это мой первый скрипт для Git." -ForegroundColor Green
-Write-Host "Сейчас получаю список запущенных служб..." -ForegroundColor Cyan
+Write-Host "Hello! Starting service collection." -ForegroundColor Green
 
-Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10 Name, Status
+$outputFile = ".\running-services.csv"
+$oldFile = ".\running-services_old.csv"
 
-Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10 Name, Status | Export-Csv -Path ".\running-services.csv" -NoTypeInformation
+if (Test-Path -Path $outputFile) {
+    Write-Host "Output file exists. Renaming to $oldFile" -ForegroundColor Yellow
+    Rename-Item -Path $outputFile -NewName $oldFile -Force
+}
 
-Write-Host "Готово!" -ForegroundColor Green'
-
+try {
+    Write-Host "Collecting running services..." -ForegroundColor Cyan
+    Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10 Name, Status | Export-Csv -Path $outputFile -NoTypeInformation
+    Write-Host "Done! Services saved to $outputFile" -ForegroundColor Green
+}
+catch {
+    Write-Host "Error occurred: $_" -ForegroundColor Red
+    exit 1
+}
