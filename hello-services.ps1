@@ -3,4 +3,7 @@ Write-Host "Сейчас получаю список запущенных слу
 
 Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10 Name, Status
 
+Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10 Name, Status | Export-Csv -Path ".\running-services.csv" -NoTypeInformation
+
 Write-Host "Готово!" -ForegroundColor Green'
+
